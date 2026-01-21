@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Kesetimbangan Fisika</title>
+
+<style>
+body {
+  font-family: Arial;
+  text-align: center;
+  background: #f2f2f2;
+}
+
+#arena {
+  position: relative;
+  width: 400px;
+  height: 200px;
+  margin: 20px auto;
+  background: #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+#lintasan {
+  position: absolute;
+  bottom: 40px;
+  width: 100%;
+  height: 5px;
+  background: black;
+}
+
+#bola {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background: red;
+  border-radius: 50%;
+  left: 185px;
+  bottom: 45px;
+  cursor: pointer;
+}
+
+button {
+  margin: 5px;
+  padding: 8px 12px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>Visual Kesetimbangan Fisika</h2>
+
+<button onclick="setMode('stabil')">Stabil</button>
+<button onclick="setMode('labil')">Labil</button>
+<button onclick="setMode('netral')">Netral</button>
+
+<div id="arena">
+  <div id="lintasan"></div>
+  <div id="bola" onclick="geser()"></div>
+</div>
+
+<p id="keterangan">Klik bola untuk melihat reaksinya</p>
+
+<script>
+let mode = "stabil";
+let bola = document.getElementById("bola");
+let posisi = 185;
+
+function setMode(m) {
+  mode = m;
+  posisi = 185;
+  bola.style.left = posisi + "px";
+
+  if (m === "stabil") {
+    document.getElementById("keterangan").innerHTML =
+    "Kesetimbangan Stabil: bola kembali ke posisi semula.";
+  }
+  if (m === "labil") {
+    document.getElementById("keterangan").innerHTML =
+    "Kesetimbangan Labil: bola menjauh dari posisi awal.";
+  }
+  if (m === "netral") {
+    document.getElementById("keterangan").innerHTML =
+    "Kesetimbangan Netral: bola berhenti di posisi baru.";
+  }
+}
+
+function geser() {
+  posisi += 40;
+
+  if (mode === "stabil") {
+    bola.style.left = posisi + "px";
+    setTimeout(() => {
+      bola.style.left = "185px";
+    }, 500);
+  }
+
+  if (mode === "labil") {
+    bola.style.left = posisi + "px";
+  }
+
+  if (mode === "netral") {
+    bola.style.left = posisi + "px";
+  }
+}
+</script>
+
+</body>
+</html>
