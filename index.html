@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Visualisasi Mobil Menanjak - Kesetimbangan Fisika</title>
+  <title>Visualisasi Kesetimbangan Fisika – Versi Disempurnakan</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #eef2ff;
+      background: linear-gradient(#eef2ff, #ffffff);
       margin: 0;
       padding: 20px;
     }
@@ -23,12 +23,14 @@
       background: white;
       padding: 20px;
       border-radius: 14px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 6px 15px rgba(0,0,0,0.12);
     }
     canvas {
-      background: linear-gradient(#87ceeb, #e0f2fe);
+      background: linear-gradient(#e0f2fe, #f8fafc);
       border-radius: 12px;
+      border: 1px solid #ddd;
     }
+    label { font-weight: bold; }
     input[type=range] { width: 100%; }
     .rumus {
       background: #f1f5f9;
@@ -37,34 +39,41 @@
       font-family: monospace;
       margin-top: 10px;
     }
+    .status-setimbang { color: green; font-weight: bold; }
+    .status-tidak { color: red; font-weight: bold; }
   </style>
 </head>
 <body>
 
-<h1>Visualisasi Mobil Menanjak (Fisika Terapan)</h1>
+<h1>Visualisasi Kesetimbangan Momen (Fisika Terapan)</h1>
 
 <div class="container">
   <!-- KONTROL -->
   <div class="card">
-    <h2>Pengaturan</h2>
+    <h2>Pengaturan Beban</h2>
 
-    <label>Berat Mobil (W) = <span id="wVal">1000</span> N</label>
-    <input type="range" min="500" max="2000" value="1000" id="w" />
-
-    <br><br>
-
-    <label>Sudut Tanjakan (θ) = <span id="tVal">20</span>°</label>
-    <input type="range" min="5" max="45" value="20" id="theta" />
+    <label>Berat Beban Kiri (W₁) = <span id="w1Val">10</span> N</label>
+    <input type="range" min="1" max="50" value="10" id="w1" />
 
     <br><br>
 
-    <label>Gaya Mesin (F) = <span id="fVal">400</span> N</label>
-    <input type="range" min="0" max="2000" value="400" id="f" />
+    <label>Jarak Kiri (d₁) = <span id="d1Val">2</span> m</label>
+    <input type="range" min="1" max="5" value="2" id="d1" />
 
-    <h3>Rumus Kesetimbangan</h3>
+    <br><br>
+
+    <label>Berat Beban Kanan (W₂) = <span id="w2Val">10</span> N</label>
+    <input type="range" min="1" max="50" value="10" id="w2" />
+
+    <br><br>
+
+    <label>Jarak Kanan (d₂) = <span id="d2Val">2</span> m</label>
+    <input type="range" min="1" max="5" value="2" id="d2" />
+
+    <h3>Rumus Kesetimbangan Momen</h3>
     <div class="rumus">
-      ΣF = 0<br>
-      F = W × sin(θ)
+      Στ = 0<br>
+      W₁ × d₁ = W₂ × d₂
     </div>
 
     <p id="hasil"></p>
@@ -72,8 +81,8 @@
 
   <!-- VISUALISASI -->
   <div class="card">
-    <h2>Visualisasi Mobil Kartun</h2>
-    <canvas id="kanvas" width="500" height="300"></canvas>
+    <h2>Visualisasi Tuas Interaktif</h2>
+    <canvas id="kanvas" width="500" height="260"></canvas>
   </div>
 </div>
 
@@ -81,74 +90,82 @@
   const canvas = document.getElementById('kanvas');
   const ctx = canvas.getContext('2d');
 
-  const w = document.getElementById('w');
-  const theta = document.getElementById('theta');
-  const f = document.getElementById('f');
+  const w1 = document.getElementById('w1');
+  const d1 = document.getElementById('d1');
+  const w2 = document.getElementById('w2');
+  const d2 = document.getElementById('d2');
 
-  const wVal = document.getElementById('wVal');
-  const tVal = document.getElementById('tVal');
-  const fVal = document.getElementById('fVal');
+  const w1Val = document.getElementById('w1Val');
+  const d1Val = document.getElementById('d1Val');
+  const w2Val = document.getElementById('w2Val');
+  const d2Val = document.getElementById('d2Val');
   const hasil = document.getElementById('hasil');
 
-  function gambarMobil() {
-    ctx.clearRect(0,0,canvas.width,canvas.height);
+  function gambar() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const sudut = theta.value * Math.PI / 180;
+    const pusatX = canvas.width / 2;
+    const pusatY = 120;
 
-    // Jalan
+    const momenKiri = w1.value * d1.value;
+    const momenKanan = w2.value * d2.value;
+    const sudut = Math.max(Math.min((momenKanan - momenKiri) * 0.5, 10), -10);
+
     ctx.save();
-    ctx.translate(50, 220);
-    ctx.rotate(-sudut);
-    ctx.fillStyle = '#444';
-    ctx.fillRect(0, 0, 400, 10);
-    ctx.restore();
+    ctx.translate(pusatX, pusatY);
+    ctx.rotate(sudut * Math.PI / 180);
 
-    // Gunung
-    ctx.fillStyle = '#22c55e';
+    // Tuas
     ctx.beginPath();
-    ctx.moveTo(0,300);
-    ctx.lineTo(150,120);
-    ctx.lineTo(300,300);
-    ctx.closePath();
+    ctx.moveTo(-200, 0);
+    ctx.lineTo(200, 0);
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = '#000';
+    ctx.stroke();
+
+    const skala = 35;
+
+    // Beban kiri
+    ctx.fillStyle = 'red';
+    ctx.beginPath();
+    ctx.arc(-d1.value * skala, 35, w1.value / 2, 0, Math.PI * 2);
     ctx.fill();
 
-    // Mobil
-    ctx.save();
-    ctx.translate(120, 200);
-    ctx.rotate(-sudut);
-
-    // Body mobil
-    ctx.fillStyle = '#3b82f6';
-    ctx.fillRect(0, -30, 80, 25);
-
-    // Atap
-    ctx.fillRect(15, -45, 40, 20);
-
-    // Roda
-    ctx.fillStyle = '#000';
-    ctx.beginPath(); ctx.arc(15, -5, 8, 0, Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.arc(65, -5, 8, 0, Math.PI*2); ctx.fill();
+    // Beban kanan
+    ctx.fillStyle = 'blue';
+    ctx.beginPath();
+    ctx.arc(d2.value * skala, 35, w2.value / 2, 0, Math.PI * 2);
+    ctx.fill();
 
     ctx.restore();
+
+    // Titik tumpu
+    ctx.beginPath();
+    ctx.moveTo(pusatX - 12, pusatY);
+    ctx.lineTo(pusatX + 12, pusatY);
+    ctx.lineTo(pusatX, pusatY + 25);
+    ctx.closePath();
+    ctx.fillStyle = '#555';
+    ctx.fill();
+
+    if (momenKiri === momenKanan) {
+      hasil.innerHTML = `<span class="status-setimbang">Status: SETIMBANG ✅</span><br>
+      W₁×d₁ = ${momenKiri} Nm | W₂×d₂ = ${momenKanan} Nm`;
+    } else {
+      hasil.innerHTML = `<span class="status-tidak">Status: TIDAK SETIMBANG ❌</span><br>
+      W₁×d₁ = ${momenKiri} Nm | W₂×d₂ = ${momenKanan} Nm`;
+    }
   }
 
   function update() {
-    wVal.textContent = w.value;
-    tVal.textContent = theta.value;
-    fVal.textContent = f.value;
-
-    const gayaTurun = w.value * Math.sin(theta.value * Math.PI / 180);
-
-    if (Math.abs(f.value - gayaTurun) < 20) {
-      hasil.innerHTML = `<b>Status:</b> SETIMBANG ✅<br>F ≈ W sinθ = ${gayaTurun.toFixed(1)} N`;
-    } else {
-      hasil.innerHTML = `<b>Status:</b> TIDAK SETIMBANG ❌<br>W sinθ = ${gayaTurun.toFixed(1)} N`;
-    }
-
-    gambarMobil();
+    w1Val.textContent = w1.value;
+    d1Val.textContent = d1.value;
+    w2Val.textContent = w2.value;
+    d2Val.textContent = d2.value;
+    gambar();
   }
 
-  [w, theta, f].forEach(e => e.addEventListener('input', update));
+  [w1, d1, w2, d2].forEach(el => el.addEventListener('input', update));
   update();
 </script>
 
