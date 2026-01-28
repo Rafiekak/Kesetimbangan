@@ -1,109 +1,155 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<title>Kesetimbangan Fisika</title>
-
-<style>
-body {
-  font-family: Arial;
-  text-align: center;
-  background: #f2f2f2;
-}
-
-#arena {
-  position: relative;
-  width: 400px;
-  height: 200px;
-  margin: 20px auto;
-  background: #ddd;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-#lintasan {
-  position: absolute;
-  bottom: 40px;
-  width: 100%;
-  height: 5px;
-  background: black;
-}
-
-#bola {
-  position: absolute;
-  width: 30px;
-  height: 30px;
-  background: red;
-  border-radius: 50%;
-  left: 185px;
-  bottom: 45px;
-  cursor: pointer;
-}
-
-button {
-  margin: 5px;
-  padding: 8px 12px;
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visualisasi Mobil Menanjak - Kesetimbangan Fisika</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #eef2ff;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 { text-align: center; }
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      max-width: 1100px;
+      margin: auto;
+    }
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    canvas {
+      background: linear-gradient(#87ceeb, #e0f2fe);
+      border-radius: 12px;
+    }
+    input[type=range] { width: 100%; }
+    .rumus {
+      background: #f1f5f9;
+      padding: 12px;
+      border-radius: 10px;
+      font-family: monospace;
+      margin-top: 10px;
+    }
+  </style>
 </head>
-
 <body>
 
-<h2>Visual Kesetimbangan Fisika</h2>
+<h1>Visualisasi Mobil Menanjak (Fisika Terapan)</h1>
 
-<button onclick="setMode('stabil')">Stabil</button>
-<button onclick="setMode('labil')">Labil</button>
-<button onclick="setMode('netral')">Netral</button>
+<div class="container">
+  <!-- KONTROL -->
+  <div class="card">
+    <h2>Pengaturan</h2>
 
-<div id="arena">
-  <div id="lintasan"></div>
-  <div id="bola" onclick="geser()"></div>
+    <label>Berat Mobil (W) = <span id="wVal">1000</span> N</label>
+    <input type="range" min="500" max="2000" value="1000" id="w" />
+
+    <br><br>
+
+    <label>Sudut Tanjakan (θ) = <span id="tVal">20</span>°</label>
+    <input type="range" min="5" max="45" value="20" id="theta" />
+
+    <br><br>
+
+    <label>Gaya Mesin (F) = <span id="fVal">400</span> N</label>
+    <input type="range" min="0" max="2000" value="400" id="f" />
+
+    <h3>Rumus Kesetimbangan</h3>
+    <div class="rumus">
+      ΣF = 0<br>
+      F = W × sin(θ)
+    </div>
+
+    <p id="hasil"></p>
+  </div>
+
+  <!-- VISUALISASI -->
+  <div class="card">
+    <h2>Visualisasi Mobil Kartun</h2>
+    <canvas id="kanvas" width="500" height="300"></canvas>
+  </div>
 </div>
 
-<p id="keterangan">Klik bola untuk melihat reaksinya</p>
-
 <script>
-let mode = "stabil";
-let bola = document.getElementById("bola");
-let posisi = 185;
+  const canvas = document.getElementById('kanvas');
+  const ctx = canvas.getContext('2d');
 
-function setMode(m) {
-  mode = m;
-  posisi = 185;
-  bola.style.left = posisi + "px";
+  const w = document.getElementById('w');
+  const theta = document.getElementById('theta');
+  const f = document.getElementById('f');
 
-  if (m === "stabil") {
-    document.getElementById("keterangan").innerHTML =
-    "Kesetimbangan Stabil: bola kembali ke posisi semula.";
-  }
-  if (m === "labil") {
-    document.getElementById("keterangan").innerHTML =
-    "Kesetimbangan Labil: bola menjauh dari posisi awal.";
-  }
-  if (m === "netral") {
-    document.getElementById("keterangan").innerHTML =
-    "Kesetimbangan Netral: bola berhenti di posisi baru.";
-  }
-}
+  const wVal = document.getElementById('wVal');
+  const tVal = document.getElementById('tVal');
+  const fVal = document.getElementById('fVal');
+  const hasil = document.getElementById('hasil');
 
-function geser() {
-  posisi += 40;
+  function gambarMobil() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
 
-  if (mode === "stabil") {
-    bola.style.left = posisi + "px";
-    setTimeout(() => {
-      bola.style.left = "185px";
-    }, 500);
+    const sudut = theta.value * Math.PI / 180;
+
+    // Jalan
+    ctx.save();
+    ctx.translate(50, 220);
+    ctx.rotate(-sudut);
+    ctx.fillStyle = '#444';
+    ctx.fillRect(0, 0, 400, 10);
+    ctx.restore();
+
+    // Gunung
+    ctx.fillStyle = '#22c55e';
+    ctx.beginPath();
+    ctx.moveTo(0,300);
+    ctx.lineTo(150,120);
+    ctx.lineTo(300,300);
+    ctx.closePath();
+    ctx.fill();
+
+    // Mobil
+    ctx.save();
+    ctx.translate(120, 200);
+    ctx.rotate(-sudut);
+
+    // Body mobil
+    ctx.fillStyle = '#3b82f6';
+    ctx.fillRect(0, -30, 80, 25);
+
+    // Atap
+    ctx.fillRect(15, -45, 40, 20);
+
+    // Roda
+    ctx.fillStyle = '#000';
+    ctx.beginPath(); ctx.arc(15, -5, 8, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(65, -5, 8, 0, Math.PI*2); ctx.fill();
+
+    ctx.restore();
   }
 
-  if (mode === "labil") {
-    bola.style.left = posisi + "px";
+  function update() {
+    wVal.textContent = w.value;
+    tVal.textContent = theta.value;
+    fVal.textContent = f.value;
+
+    const gayaTurun = w.value * Math.sin(theta.value * Math.PI / 180);
+
+    if (Math.abs(f.value - gayaTurun) < 20) {
+      hasil.innerHTML = `<b>Status:</b> SETIMBANG ✅<br>F ≈ W sinθ = ${gayaTurun.toFixed(1)} N`;
+    } else {
+      hasil.innerHTML = `<b>Status:</b> TIDAK SETIMBANG ❌<br>W sinθ = ${gayaTurun.toFixed(1)} N`;
+    }
+
+    gambarMobil();
   }
 
-  if (mode === "netral") {
-    bola.style.left = posisi + "px";
-  }
-}
+  [w, theta, f].forEach(e => e.addEventListener('input', update));
+  update();
 </script>
 
 </body>
