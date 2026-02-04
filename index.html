@@ -124,17 +124,22 @@
     ctx.stroke();
 
     const skala = 35;
+    const offsetY = 10;
 
-    // Beban kiri
+    // radius bola mengikuti berat
+    const r1 = w1.value / 2;
+    const r2 = w2.value / 2;
+
+    // Beban kiri (DI ATAS TUAS)
     ctx.fillStyle = 'red';
     ctx.beginPath();
-    ctx.arc(-d1.value * skala, 35, w1.value / 2, 0, Math.PI * 2);
+    ctx.arc(-d1.value * skala, -(r1 + offsetY), r1, 0, Math.PI * 2);
     ctx.fill();
 
-    // Beban kanan
+    // Beban kanan (DI ATAS TUAS)
     ctx.fillStyle = 'blue';
     ctx.beginPath();
-    ctx.arc(d2.value * skala, 35, w2.value / 2, 0, Math.PI * 2);
+    ctx.arc(d2.value * skala, -(r2 + offsetY), r2, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.restore();
