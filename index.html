@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Visualisasi Kesetimbangan Fisika – Versi Disempurnakan</title>
+  <title>Visualisasi Kesetimbangan Momen – Transportasi Darat</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -48,29 +48,28 @@
 <h1>Visualisasi Kesetimbangan Momen (Fisika Terapan)</h1>
 
 <div class="container">
-  <!-- KONTROL -->
   <div class="card">
     <h2>Pengaturan Beban</h2>
 
-    <label>Berat Beban Kiri (W₁) = <span id="w1Val">10</span> N</label>
-    <input type="range" min="1" max="50" value="10" id="w1" />
+    <label>Berat Kiri (W₁) = <span id="w1Val">10</span> N</label>
+    <input type="range" min="1" max="50" value="10" id="w1">
 
     <br><br>
 
     <label>Jarak Kiri (d₁) = <span id="d1Val">2</span> m</label>
-    <input type="range" min="1" max="5" value="2" id="d1" />
+    <input type="range" min="1" max="5" value="2" id="d1">
 
     <br><br>
 
-    <label>Berat Beban Kanan (W₂) = <span id="w2Val">10</span> N</label>
-    <input type="range" min="1" max="50" value="10" id="w2" />
+    <label>Berat Kanan (W₂) = <span id="w2Val">10</span> N</label>
+    <input type="range" min="1" max="50" value="10" id="w2">
 
     <br><br>
 
     <label>Jarak Kanan (d₂) = <span id="d2Val">2</span> m</label>
-    <input type="range" min="1" max="5" value="2" id="d2" />
+    <input type="range" min="1" max="5" value="2" id="d2">
 
-    <h3>Rumus Kesetimbangan Momen</h3>
+    <h3>Rumus Kesetimbangan</h3>
     <div class="rumus">
       Στ = 0<br>
       W₁ × d₁ = W₂ × d₂
@@ -79,99 +78,95 @@
     <p id="hasil"></p>
   </div>
 
-  <!-- VISUALISASI -->
   <div class="card">
-    <h2>Visualisasi Tuas Interaktif</h2>
+    <h2>Visualisasi Tuas & Moda Transportasi</h2>
     <canvas id="kanvas" width="500" height="260"></canvas>
   </div>
 </div>
 
 <script>
-  const canvas = document.getElementById('kanvas');
-  const ctx = canvas.getContext('2d');
+const canvas = document.getElementById("kanvas");
+const ctx = canvas.getContext("2d");
 
-  const w1 = document.getElementById('w1');
-  const d1 = document.getElementById('d1');
-  const w2 = document.getElementById('w2');
-  const d2 = document.getElementById('d2');
+const w1 = document.getElementById("w1");
+const d1 = document.getElementById("d1");
+const w2 = document.getElementById("w2");
+const d2 = document.getElementById("d2");
 
-  const w1Val = document.getElementById('w1Val');
-  const d1Val = document.getElementById('d1Val');
-  const w2Val = document.getElementById('w2Val');
-  const d2Val = document.getElementById('d2Val');
-  const hasil = document.getElementById('hasil');
+const w1Val = document.getElementById("w1Val");
+const d1Val = document.getElementById("d1Val");
+const w2Val = document.getElementById("w2Val");
+const d2Val = document.getElementById("d2Val");
+const hasil = document.getElementById("hasil");
 
-  function gambar() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+function jenisKendaraan(w) {
+  if (w <= 10) return "🚲";
+  if (w <= 20) return "🏍️";
+  if (w <= 30) return "🚗";
+  if (w <= 40) return "🚌";
+  return "🚛";
+}
 
-    const pusatX = canvas.width / 2;
-    const pusatY = 120;
+function gambarKendaraan(x, y, w) {
+  ctx.font = "32px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText(jenisKendaraan(w), x, y);
+}
 
-    const momenKiri = w1.value * d1.value;
-    const momenKanan = w2.value * d2.value;
-    const sudut = Math.max(Math.min((momenKanan - momenKiri) * 0.5, 10), -10);
+function gambar() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    ctx.save();
-    ctx.translate(pusatX, pusatY);
-    ctx.rotate(sudut * Math.PI / 180);
+  const cx = canvas.width / 2;
+  const cy = 120;
 
-    // Tuas
-    ctx.beginPath();
-    ctx.moveTo(-200, 0);
-    ctx.lineTo(200, 0);
-    ctx.lineWidth = 5;
-    ctx.strokeStyle = '#000';
-    ctx.stroke();
+  const m1 = w1.value * d1.value;
+  const m2 = w2.value * d2.value;
+  const sudut = Math.max(Math.min((m2 - m1) * 0.4, 10), -10);
 
-    const skala = 35;
-    const offsetY = 10;
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(sudut * Math.PI / 180);
 
-    // radius bola mengikuti berat
-    const r1 = w1.value / 2;
-    const r2 = w2.value / 2;
+  // Tuas
+  ctx.beginPath();
+  ctx.moveTo(-200, 0);
+  ctx.lineTo(200, 0);
+  ctx.lineWidth = 5;
+  ctx.stroke();
 
-    // Beban kiri (DI ATAS TUAS)
-    ctx.fillStyle = 'red';
-    ctx.beginPath();
-    ctx.arc(-d1.value * skala, -(r1 + offsetY), r1, 0, Math.PI * 2);
-    ctx.fill();
+  const skala = 35;
+  const yKendaraan = -15;
 
-    // Beban kanan (DI ATAS TUAS)
-    ctx.fillStyle = 'blue';
-    ctx.beginPath();
-    ctx.arc(d2.value * skala, -(r2 + offsetY), r2, 0, Math.PI * 2);
-    ctx.fill();
+  gambarKendaraan(-d1.value * skala, yKendaraan, w1.value);
+  gambarKendaraan(d2.value * skala, yKendaraan, w2.value);
 
-    ctx.restore();
+  ctx.restore();
 
-    // Titik tumpu
-    ctx.beginPath();
-    ctx.moveTo(pusatX - 12, pusatY);
-    ctx.lineTo(pusatX + 12, pusatY);
-    ctx.lineTo(pusatX, pusatY + 25);
-    ctx.closePath();
-    ctx.fillStyle = '#555';
-    ctx.fill();
+  // Titik tumpu
+  ctx.beginPath();
+  ctx.moveTo(cx - 12, cy);
+  ctx.lineTo(cx + 12, cy);
+  ctx.lineTo(cx, cy + 25);
+  ctx.closePath();
+  ctx.fillStyle = "#555";
+  ctx.fill();
 
-    if (momenKiri === momenKanan) {
-      hasil.innerHTML = `<span class="status-setimbang">Status: SETIMBANG ✅</span><br>
-      W₁×d₁ = ${momenKiri} Nm | W₂×d₂ = ${momenKanan} Nm`;
-    } else {
-      hasil.innerHTML = `<span class="status-tidak">Status: TIDAK SETIMBANG ❌</span><br>
-      W₁×d₁ = ${momenKiri} Nm | W₂×d₂ = ${momenKanan} Nm`;
-    }
-  }
+  hasil.innerHTML =
+    m1 === m2
+      ? `<span class="status-setimbang">Status: SETIMBANG ✅</span><br>W₁×d₁ = ${m1} Nm | W₂×d₂ = ${m2} Nm`
+      : `<span class="status-tidak">Status: TIDAK SETIMBANG ❌</span><br>W₁×d₁ = ${m1} Nm | W₂×d₂ = ${m2} Nm`;
+}
 
-  function update() {
-    w1Val.textContent = w1.value;
-    d1Val.textContent = d1.value;
-    w2Val.textContent = w2.value;
-    d2Val.textContent = d2.value;
-    gambar();
-  }
+function update() {
+  w1Val.textContent = w1.value;
+  d1Val.textContent = d1.value;
+  w2Val.textContent = w2.value;
+  d2Val.textContent = d2.value;
+  gambar();
+}
 
-  [w1, d1, w2, d2].forEach(el => el.addEventListener('input', update));
-  update();
+[w1, d1, w2, d2].forEach(e => e.addEventListener("input", update));
+update();
 </script>
 
 </body>
