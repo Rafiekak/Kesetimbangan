@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Visualisasi Kesetimbangan Momen – Transportasi Darat</title>
+  <title>Visualisasi Kesetimbangan Momen – Timbangan Realistis</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -79,8 +79,8 @@
   </div>
 
   <div class="card">
-    <h2>Visualisasi Tuas & Moda Transportasi</h2>
-    <canvas id="kanvas" width="500" height="260"></canvas>
+    <h2>Visualisasi Timbangan & Moda Transportasi</h2>
+    <canvas id="kanvas" width="500" height="280"></canvas>
   </div>
 </div>
 
@@ -121,35 +121,42 @@ function gambar() {
 
   const m1 = w1.value * d1.value;
   const m2 = w2.value * d2.value;
-  const sudut = Math.max(Math.min((m2 - m1) * 0.4, 10), -10);
+  const sudut = Math.max(Math.min((m2 - m1) * 0.4, 12), -12);
+
+  /* ===== ALAS TIMBANGAN ===== */
+  ctx.fillStyle = "#64748b";
+  ctx.fillRect(cx - 60, cy + 70, 120, 10);
+
+  /* ===== TIANG ===== */
+  ctx.fillRect(cx - 5, cy + 10, 10, 60);
 
   ctx.save();
   ctx.translate(cx, cy);
   ctx.rotate(sudut * Math.PI / 180);
 
-  // Tuas
+  /* ===== BATANG TIMBANGAN ===== */
   ctx.beginPath();
   ctx.moveTo(-200, 0);
   ctx.lineTo(200, 0);
-  ctx.lineWidth = 5;
+  ctx.lineWidth = 6;
+  ctx.strokeStyle = "#1f2933";
   ctx.stroke();
 
   const skala = 35;
-  const yKendaraan = -15;
+  const piringY = 22;
 
-  gambarKendaraan(-d1.value * skala, yKendaraan, w1.value);
-  gambarKendaraan(d2.value * skala, yKendaraan, w2.value);
+  /* ===== Piring kiri ===== */
+  ctx.fillStyle = "#cbd5e1";
+  ctx.fillRect(-d1.value * skala - 30, piringY, 60, 8);
+
+  /* ===== Piring kanan ===== */
+  ctx.fillRect(d2.value * skala - 30, piringY, 60, 8);
+
+  /* ===== Kendaraan ===== */
+  gambarKendaraan(-d1.value * skala, piringY - 5, w1.value);
+  gambarKendaraan(d2.value * skala, piringY - 5, w2.value);
 
   ctx.restore();
-
-  // Titik tumpu
-  ctx.beginPath();
-  ctx.moveTo(cx - 12, cy);
-  ctx.lineTo(cx + 12, cy);
-  ctx.lineTo(cx, cy + 25);
-  ctx.closePath();
-  ctx.fillStyle = "#555";
-  ctx.fill();
 
   hasil.innerHTML =
     m1 === m2
@@ -171,3 +178,4 @@ update();
 
 </body>
 </html>
+
