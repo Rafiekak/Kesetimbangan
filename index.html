@@ -1,3 +1,89 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visualisasi Kesetimbangan Momen – Transportasi Darat</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(#eef2ff, #ffffff);
+      margin: 0;
+      padding: 20px;
+    }
+    h1 { text-align: center; }
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      max-width: 1100px;
+      margin: auto;
+    }
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 14px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+    }
+    canvas {
+      background: linear-gradient(#e0f2fe, #f8fafc);
+      border-radius: 12px;
+      border: 1px solid #ddd;
+    }
+    label { font-weight: bold; }
+    input[type=range] { width: 100%; }
+    .rumus {
+      background: #f1f5f9;
+      padding: 12px;
+      border-radius: 10px;
+      font-family: monospace;
+      margin-top: 10px;
+    }
+    .status-setimbang { color: green; font-weight: bold; }
+    .status-tidak { color: red; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+<h1>Visualisasi Kesetimbangan Momen (Fisika Terapan)</h1>
+
+<div class="container">
+  <div class="card">
+    <h2>Pengaturan Beban</h2>
+
+    <label>Berat Kiri (W₁) = <span id="w1Val">10</span> N</label>
+    <input type="range" min="1" max="50" value="10" id="w1">
+
+    <br><br>
+
+    <label>Jarak Kiri (d₁) = <span id="d1Val">2</span> m</label>
+    <input type="range" min="1" max="5" value="2" id="d1">
+
+    <br><br>
+
+    <label>Berat Kanan (W₂) = <span id="w2Val">10</span> N</label>
+    <input type="range" min="1" max="50" value="10" id="w2">
+
+    <br><br>
+
+    <label>Jarak Kanan (d₂) = <span id="d2Val">2</span> m</label>
+    <input type="range" min="1" max="5" value="2" id="d2">
+
+    <h3>Rumus Kesetimbangan</h3>
+    <div class="rumus">
+      Στ = 0<br>
+      W₁ × d₁ = W₂ × d₂
+    </div>
+
+    <p id="hasil"></p>
+  </div>
+
+  <div class="card">
+    <h2>Visualisasi Tuas & Moda Transportasi</h2>
+    <canvas id="kanvas" width="500" height="260"></canvas>
+  </div>
+</div>
+
 <script>
 const canvas = document.getElementById("kanvas");
 const ctx = canvas.getContext("2d");
@@ -22,7 +108,7 @@ function jenisKendaraan(w) {
 }
 
 function gambarKendaraan(x, y, w) {
-  ctx.font = "30px Arial";
+  ctx.font = "32px Arial";
   ctx.textAlign = "center";
   ctx.fillText(jenisKendaraan(w), x, y);
 }
@@ -31,74 +117,44 @@ function gambar() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   const cx = canvas.width / 2;
-  const cy = 115;
+  const cy = 120;
 
   const m1 = w1.value * d1.value;
   const m2 = w2.value * d2.value;
-  const sudut = Math.max(Math.min((m2 - m1) * 0.4, 12), -12);
-
-  /* ===== ALAS ===== */
-  ctx.fillStyle = "#475569";
-  ctx.fillRect(cx - 70, cy + 90, 140, 12);
-
-  /* ===== TIANG ===== */
-  ctx.fillRect(cx - 6, cy + 20, 12, 70);
-
-  /* ===== TITIK TUMPU ===== */
-  ctx.beginPath();
-  ctx.arc(cx, cy + 20, 6, 0, Math.PI * 2);
-  ctx.fillStyle = "#1f2933";
-  ctx.fill();
+  const sudut = Math.max(Math.min((m2 - m1) * 0.4, 10), -10);
 
   ctx.save();
-  ctx.translate(cx, cy + 20);
+  ctx.translate(cx, cy);
   ctx.rotate(sudut * Math.PI / 180);
 
-  /* ===== BATANG TIMBANGAN ===== */
+  // Tuas
   ctx.beginPath();
   ctx.moveTo(-200, 0);
   ctx.lineTo(200, 0);
-  ctx.lineWidth = 6;
-  ctx.strokeStyle = "#0f172a";
+  ctx.lineWidth = 5;
   ctx.stroke();
 
   const skala = 35;
-  const taliPanjang = 35;
-  const piringY = taliPanjang + 8;
+  const yKendaraan = -15;
 
-  /* ===== TALI KIRI ===== */
-  ctx.beginPath();
-  ctx.moveTo(-d1.value * skala, 0);
-  ctx.lineTo(-d1.value * skala, taliPanjang);
-  ctx.strokeStyle = "#334155";
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  /* ===== TALI KANAN ===== */
-  ctx.beginPath();
-  ctx.moveTo(d2.value * skala, 0);
-  ctx.lineTo(d2.value * skala, taliPanjang);
-  ctx.stroke();
-
-  /* ===== PIRING KIRI ===== */
-  ctx.fillStyle = "#cbd5e1";
-  ctx.fillRect(-d1.value * skala - 28, piringY, 56, 8);
-
-  /* ===== PIRING KANAN ===== */
-  ctx.fillRect(d2.value * skala - 28, piringY, 56, 8);
-
-  /* ===== KENDARAAN ===== */
-  gambarKendaraan(-d1.value * skala, piringY - 5, w1.value);
-  gambarKendaraan(d2.value * skala, piringY - 5, w2.value);
+  gambarKendaraan(-d1.value * skala, yKendaraan, w1.value);
+  gambarKendaraan(d2.value * skala, yKendaraan, w2.value);
 
   ctx.restore();
 
+  // Titik tumpu
+  ctx.beginPath();
+  ctx.moveTo(cx - 12, cy);
+  ctx.lineTo(cx + 12, cy);
+  ctx.lineTo(cx, cy + 25);
+  ctx.closePath();
+  ctx.fillStyle = "#555";
+  ctx.fill();
+
   hasil.innerHTML =
     m1 === m2
-      ? `<span class="status-setimbang">Status: SETIMBANG ✅</span><br>
-         W₁×d₁ = ${m1} Nm | W₂×d₂ = ${m2} Nm`
-      : `<span class="status-tidak">Status: TIDAK SETIMBANG ❌</span><br>
-         W₁×d₁ = ${m1} Nm | W₂×d₂ = ${m2} Nm`;
+      ? `<span class="status-setimbang">Status: SETIMBANG ✅</span><br>W₁×d₁ = ${m1} Nm | W₂×d₂ = ${m2} Nm`
+      : `<span class="status-tidak">Status: TIDAK SETIMBANG ❌</span><br>W₁×d₁ = ${m1} Nm | W₂×d₂ = ${m2} Nm`;
 }
 
 function update() {
@@ -113,4 +169,5 @@ function update() {
 update();
 </script>
 
-
+</body>
+</html>
